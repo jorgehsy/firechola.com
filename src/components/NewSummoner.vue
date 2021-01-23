@@ -18,7 +18,7 @@
       <button
         type="button"
         class="btn btn-primary btn-lg"
-        @click="validateSummoner"
+        @click="validateSummoner(summonerName)"
       >
         Validar
       </button>
@@ -96,11 +96,19 @@ export default {
   name: "NewSummoner",
 
   created() {
-    let userStorage = window.localStorage;
-    if (userStorage.player) {
-      // let player = JSON.parse(userStorage.player);
-      router.push({ path: "registered" });
-    }
+    axios
+      .get(`${apiUrl}/riot/summoner/by-name/asdasd`)
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    // let userStorage = window.localStorage;
+    // if (userStorage.player) {
+    //   // let player = JSON.parse(userStorage.player);
+    //   router.push({ path: "registered" });
+    // }
   },
   setup() {
     var summonerName = ref("");
@@ -151,15 +159,17 @@ export default {
       selectedTier.value.push(role);
     }
 
-    async function validateSummoner() {
+    async function validateSummoner(name) {
       this.loading = true;
       return checkSummoner()
         .then(({ data }) => {
           if (data === "registered") {
             router.push({ path: "registered" });
           } else {
-            this.loading = false;
-            this.validated = true;
+            validateRiotAccount(name).then(() => {
+              this.loading = false;
+              this.validated = true;
+            });
           }
         })
         .catch(err => {
@@ -169,6 +179,19 @@ export default {
 
     async function submitSummoner() {
       await registerSummoner();
+    }
+
+    async function validateRiotAccount() {
+      new Promise((resolve, reject) => {
+        // axios
+        //   .get(`${riotSummonerUrl}/by-name/${name}`, riotHeaders)
+        //   .then(() => {
+        resolve("validated");
+        // })
+        // .catch(() => {
+        reject("rejected");
+        //     });
+      });
     }
 
     // function showMessage(msg) {
