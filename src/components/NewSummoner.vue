@@ -87,8 +87,10 @@
 
 <script>
 import { ref, computed } from "vue";
-const _findIndex = require("lodash/findIndex");
 import router from "@/router";
+import axios from "axios";
+const _findIndex = require("lodash/findIndex");
+const apiUrl = process.env.VUE_APP_API_HOST;
 
 export default {
   name: "NewSummoner",
@@ -116,11 +118,7 @@ export default {
     });
 
     async function checkSummoner() {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve("ok");
-        }, 2000);
-      });
+      return axios.get(`${apiUrl}/player/check/${summonerName.value}`);
     }
 
     function isSelectedRole(role) {
@@ -145,21 +143,24 @@ export default {
       selectedTier.value.push(role);
     }
 
-    function validateSummoner() {
+    async function validateSummoner() {
       this.loading = true;
-      checkSummoner()
-        .then(() => {
-          this.loading = false;
-          this.validated = true;
-          // registerSummoner();
+      return checkSummoner()
+        .then(({ data }) => {
+          if (data === "registered") {
+            router.push({ path: "registered" });
+          } else {
+            this.loading = false;
+            this.validated = true;
+          }
         })
         .catch(err => {
           console.log(err);
         });
     }
 
-    function submitSummoner() {
-      registerSummoner();
+    async function submitSummoner() {
+      await registerSummoner();
     }
 
     // function showMessage(msg) {
@@ -170,8 +171,19 @@ export default {
     //   return true;
     // }
 
-    function registerSummoner() {
-      router.push({ path: "registered" });
+    async function registerSummoner() {
+      return axios
+        .post("http://dev.api.firechola.com/player", {
+          summoner_name: summonerName.value,
+          tier: selectedTier.value[0],
+          roles: selectedRoles.value
+        })
+        .then(() => {
+          router.push({ path: "registered" });
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
 
     return {

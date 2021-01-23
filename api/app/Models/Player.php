@@ -12,4 +12,8 @@ class Player extends Model
         'summoner_name', 'tier', 'roles', 'confirmed'
     ];
 
+    protected $casts = [
+        'roles' => 'array'
+    ];
+
 }

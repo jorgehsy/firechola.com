@@ -15,10 +15,10 @@ class CreatePlayer extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->id();
-            $table->string('sumonner_name');
-            $table->json('tier');
+            $table->string('summoner_name');
+            $table->string('tier');
             $table->json('roles');
-            $table->boolean('confirmed');
+            $table->boolean('confirmed')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreatePlayer extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('player');
+        Schema::dropIfExists('players');
     }
 }

@@ -1,4 +1,5 @@
 <?php
 
 $router->get('/', 'PlayerController@index');
-$router->post('/player/register', 'PlayerController@register');
+$router->get('/player/check/{summonerName}', 'PlayerController@check');
+$router->post('/player', 'PlayerController@register');
