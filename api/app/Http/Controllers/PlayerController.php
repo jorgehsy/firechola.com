@@ -16,6 +16,10 @@ class PlayerController extends Controller
         return Player::create($request->all());
     }
 
+    public function getAll(){
+        return Player::all();
+    }
+
     public function check(Request $request, $summonerName){
         $result = Player::where('summoner_name', $summonerName)->first();
 

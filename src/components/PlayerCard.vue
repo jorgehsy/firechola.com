@@ -1,9 +1,9 @@
 <template>
   <div class="player media align-self-stretch">
     <img
-      :src="getPlayerTier(player.tier[0])"
+      :src="getPlayerTier(player.tier)"
       class="mr-1 summoner-icon"
-      alt="player.tier[0]"
+      :alt="player.tier"
     />
     <div class="media-body text-left">
       <h5 class="mt-0">{{ player.name }}</h5>
@@ -26,9 +26,15 @@ export default {
     function getPlayerTier(tier) {
       switch (tier) {
         case "TIER I":
-          return "/images/ranked-emblems/Emblem_Bronze.png";
+          return "/images/ranked-emblems/Emblem_Platinum.png";
         case "TIER II":
+          return "/images/ranked-emblems/Emblem_Gold.png";
+        case "TIER III":
           return "/images/ranked-emblems/Emblem_Silver.png";
+        case "TIER IV":
+          return "/images/ranked-emblems/Emblem_Bronze.png";
+        case "TIER V":
+          return "/images/ranked-emblems/Emblem_Iron.png";
       }
     }
     function getPlayerRole(role) {

@@ -31,11 +31,28 @@
 
 <script>
 import { ref, computed } from "vue";
+import axios from "axios";
 import PlayerCard from "@/components/PlayerCard";
+const apiUrl = process.env.VUE_APP_API_HOST;
 export default {
   name: "Registered",
   components: {
     "player-card": PlayerCard
+  },
+  created() {
+    axios
+      .get(`${apiUrl}/players`)
+      .then(({ data }) => {
+        this.summoners = data.map(d => ({
+          name: d.summoner_name,
+          tier: d.tier,
+          roles: d.roles,
+          confirmed: d.confirmed
+        }));
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
   setup() {
     var playersConfirmed = computed(() =>
@@ -46,44 +63,7 @@ export default {
     );
     var totalConfirmed = computed(() => playersConfirmed.value.length);
     var totalRegistered = computed(() => summoners.value.length);
-    var summoners = ref([
-      {
-        name: "YKZA Fireshoot",
-        tier: ["TIER I"],
-        roles: ["MID", "TOP"],
-        confirmed: true
-      },
-      {
-        name: "YKZA Tek",
-        tier: ["TIER I"],
-        roles: ["JUNGLE", "TOP"],
-        confirmed: false
-      },
-      {
-        name: "YKZA Tek",
-        tier: ["TIER I"],
-        roles: ["JUNGLE", "TOP"],
-        confirmed: false
-      },
-      {
-        name: "YKZA Tek",
-        tier: ["TIER I"],
-        roles: ["JUNGLE", "TOP"],
-        confirmed: false
-      },
-      {
-        name: "Escor",
-        tier: ["TIER II"],
-        roles: ["JUNGLE", "TOP", "SUPPORT"],
-        confirmed: true
-      },
-      {
-        name: "EstaraATodoOGT",
-        tier: ["TIER II"],
-        roles: ["JUNGLE", "TOP", "SUPPORT", "BOTTOM", "MID"],
-        confirmed: true
-      }
-    ]);
+    var summoners = ref([]);
 
     return {
       summoners,

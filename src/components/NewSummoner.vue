@@ -94,6 +94,14 @@ const apiUrl = process.env.VUE_APP_API_HOST;
 
 export default {
   name: "NewSummoner",
+
+  created() {
+    let userStorage = window.localStorage;
+    if (userStorage.player) {
+      // let player = JSON.parse(userStorage.player);
+      router.push({ path: "registered" });
+    }
+  },
   setup() {
     var summonerName = ref("");
     var loading = ref(false);
@@ -173,12 +181,13 @@ export default {
 
     async function registerSummoner() {
       return axios
-        .post("http://dev.api.firechola.com/player", {
+        .post(`${apiUrl}/player`, {
           summoner_name: summonerName.value,
           tier: selectedTier.value[0],
           roles: selectedRoles.value
         })
-        .then(() => {
+        .then(({ data }) => {
+          window.localStorage.setItem("player", JSON.stringify(data));
           router.push({ path: "registered" });
         })
         .catch(err => {
