@@ -43,12 +43,14 @@ export default {
     axios
       .get(`${apiUrl}/players`)
       .then(({ data }) => {
-        this.summoners = data.map(d => ({
-          name: d.summoner_name,
-          tier: d.tier,
-          roles: d.roles,
-          confirmed: d.confirmed
-        }));
+        this.summoners = data.map(d => {
+          return {
+            name: d.riot_data.name,
+            tier: d.tier,
+            roles: d.roles,
+            confirmed: d.confirmed
+          };
+        });
       })
       .catch(err => {
         console.log(err);

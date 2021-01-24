@@ -6,7 +6,7 @@
       :alt="player.tier"
     />
     <div class="media-body text-left">
-      <h5 class="mt-0">{{ player.name }}</h5>
+      <h5 class="mt-0">{{ playerName }}</h5>
       <div class="roles">
         <span v-for="(role, key) in player.roles" :key="key" class="mr-2">
           <img :src="getPlayerRole(role)" :alt="role" class="sumonner-role" />
@@ -17,12 +17,17 @@
 </template>
 
 <script>
+import { computed } from "vue";
 export default {
   props: {
     player: Object
   },
 
-  setup() {
+  created() {},
+
+  setup(props) {
+    const playerName = computed(() => props.player.name);
+
     function getPlayerTier(tier) {
       switch (tier) {
         case "TIER I":
@@ -52,7 +57,7 @@ export default {
       }
     }
 
-    return { getPlayerTier, getPlayerRole };
+    return { getPlayerTier, getPlayerRole, playerName };
   }
 };
 </script>
