@@ -18,6 +18,7 @@ class CreatePlayer extends Migration
             $table->string('summoner_name');
             $table->string('tier');
             $table->json('roles');
+            $table->json('riot_data');
             $table->boolean('confirmed')->default(false);
             $table->timestamps();
         });

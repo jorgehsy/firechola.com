@@ -79,9 +79,9 @@
         Registrarse
       </button>
     </template>
-    <div class="message" v-if="message !== null">
-      {{ message }}
-    </div>
+  </div>
+  <div class="message" v-if="message !== ''">
+    {{ message }}
   </div>
 </template>
 
@@ -96,25 +96,18 @@ export default {
   name: "NewSummoner",
 
   created() {
-    axios
-      .get(`${apiUrl}/riot/summoner/by-name/asdasd`)
-      .then(({ data }) => {
-        console.log(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    // let userStorage = window.localStorage;
-    // if (userStorage.player) {
-    //   // let player = JSON.parse(userStorage.player);
-    //   router.push({ path: "registered" });
-    // }
+    let userStorage = window.localStorage;
+    if (userStorage.player) {
+      // let player = JSON.parse(userStorage.player);
+      router.push({ path: "registered" });
+    }
   },
   setup() {
     var summonerName = ref("");
     var loading = ref(false);
     var validated = ref(false);
-    var message = ref(null);
+    var message = ref("");
+    var player = ref({});
     const roles = ref(["TOP", "JUNGLE", "MID", "BOTTOM", "SUPPORT"]);
     const tiers = ref([
       { value: "TIER I", label: "Faker es mi pupilo" },
@@ -166,10 +159,14 @@ export default {
           if (data === "registered") {
             router.push({ path: "registered" });
           } else {
-            validateRiotAccount(name).then(() => {
-              this.loading = false;
-              this.validated = true;
-            });
+            validateRiotAccount(name)
+              .then(() => {
+                this.loading = false;
+                this.validated = true;
+              })
+              .catch(() => {
+                showMessage(`No existe ${name} en la cuenta de LAN`);
+              });
           }
         })
         .catch(err => {
@@ -181,34 +178,40 @@ export default {
       await registerSummoner();
     }
 
-    async function validateRiotAccount() {
-      new Promise((resolve, reject) => {
-        // axios
-        //   .get(`${riotSummonerUrl}/by-name/${name}`, riotHeaders)
-        //   .then(() => {
-        resolve("validated");
-        // })
-        // .catch(() => {
-        reject("rejected");
-        //     });
+    async function validateRiotAccount(name) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${apiUrl}/riot/summoner/by-name/${name}`)
+          .then(({ data }) => {
+            player = { riot_data: data };
+            resolve(data);
+          })
+          .catch(() => {
+            reject("rejected");
+          });
       });
     }
 
-    // function showMessage(msg) {
-    //   message.value = msg;
-    //   setTimeout(() => {
-    //     message.value = null;
-    //   }, 5000);
-    //   return true;
-    // }
+    function showMessage(msg) {
+      message.value = msg;
+      setTimeout(() => {
+        message.value = null;
+      }, 5000);
+      loading.value = false;
+      return true;
+    }
 
     async function registerSummoner() {
-      return axios
-        .post(`${apiUrl}/player`, {
+      let data = {
+        ...player,
+        ...{
           summoner_name: summonerName.value,
           tier: selectedTier.value[0],
           roles: selectedRoles.value
-        })
+        }
+      };
+      return axios
+        .post(`${apiUrl}/player`, data)
         .then(({ data }) => {
           window.localStorage.setItem("player", JSON.stringify(data));
           router.push({ path: "registered" });

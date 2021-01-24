@@ -14,6 +14,6 @@ class RiotController
             'X-Riot-Token' => env('RIOT_API')
         ])->get($url);
 
-        return $response;
+        return response($response, $response->getStatusCode());
     }
 }
